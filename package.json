@@ -1,0 +1,12 @@
+{
+  "name": "doubao-multi-open",
+  "version": "3.0.0",
+  "description": "豆包多账号管理器 - 视图池架构 · 单窗口毫秒级切号",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^43.4.1"
+  }
+}

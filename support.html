@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>支持作者</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Microsoft YaHei", system-ui, sans-serif;
+      background: #ffffff; color: #1d1d1f;
+      display: flex; flex-direction: column; align-items: center;
+      overflow-y: auto; user-select: none;
+    }
+    .head { width: 100%; padding: 16px 20px 14px; border-bottom: 1px solid #eeeef2; }
+    .title { font-size: 15px; font-weight: 600; color: #1d1d1f; }
+    .title .h { color: #ff2d55; margin-right: 7px; }
+    .body { padding: 22px 24px 20px; text-align: center; width: 100%; }
+    .line { font-size: 14px; color: #1d1d1f; line-height: 2.1; font-weight: 500; }
+    .line-en { font-size: 12px; color: #86868b; line-height: 1.9; }
+    .line-qq { font-size: 13px; color: #1d63d8; line-height: 2.2; font-weight: 600; }
+    .copy-btn {
+      vertical-align: middle; margin-left: 6px;
+      width: 24px; height: 24px; border-radius: 6px;
+      border: 1px solid #e3e3e8; background: #f7f7f9; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background .15s ease;
+    }
+    .copy-btn:hover { background: #eceef2; }
+    .copy-btn svg { width: 12px; height: 12px; display: block; }
+    .copy-tip {
+      display: inline-block; margin-left: 6px; vertical-align: middle;
+      font-size: 11px; color: #1e7e34; background: #e6f4ea;
+      padding: 2px 8px; border-radius: 8px;
+      opacity: 0; transition: opacity .2s ease;
+    }
+    .copy-tip.show { opacity: 1; }
+    .cards { display: flex; gap: 18px; justify-content: center; margin: 16px 0 4px; flex-wrap: wrap; }
+    .card {
+      width: 225px; background: #fff; border-radius: 10px;
+      border: 1px solid #e3e3e8; padding: 10px 10px 6px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    .card img { width: 100%; display: block; border-radius: 6px; }
+    .ph {
+      display: none; aspect-ratio: 1 / 1.3;
+      color: #9a9aa2; font-size: 11px; line-height: 1.9;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 10px;
+    }
+    .cap { font-size: 12px; color: #515154; padding: 7px 0 3px; font-weight: 600; }
+    .thanks { font-size: 13px; color: #515154; margin: 14px 0 6px; }
+    .esc-tip { font-size: 10px; color: #b0b0b6; margin-bottom: 10px; }
+    /* 迷你预览模式(由主进程添加 body.mini): 压缩无用空间 */
+    body.mini .head { display: none; }
+    body.mini .body { padding: 12px 14px 8px; }
+    body.mini .line { font-size: 12px; line-height: 1.7; font-weight: 600; }
+    body.mini .line-en { font-size: 10px; line-height: 1.6; }
+    body.mini .line-qq { font-size: 11px; line-height: 1.8; }
+    body.mini .cards { gap: 12px; margin: 8px 0 2px; }
+    body.mini .card { width: 196px; padding: 6px 6px 3px; }
+    body.mini .card img { max-height: 218px; width: auto; max-width: 100%; margin: 0 auto; }
+    body.mini .cap { padding: 4px 0 1px; font-size: 11px; }
+    body.mini .thanks { margin: 6px 0 0; font-size: 11px; }
+    body.mini .esc-tip { display: none; }
+  </style>
+</head>
+<body>
+  <div class="head">
+    <div class="title"><span class="h">❤</span>支持作者</div>
+  </div>
+  <div class="body">
+    <p class="line">如果我们的作品帮到了你</p>
+    <p class="line">可以请作者喝杯咖啡 ☕</p>
+    <p class="line">您的支持是我持续更新的动力</p>
+    <p class="line-en">If this project helped you, feel free to buy me a coffee ☕.</p>
+    <p class="line-en">Your support fuels my continuous updates.</p>
+    <p class="line-qq">交流沟通拜师 联系QQ群：<span id="qqNum">1108301812</span><button class="copy-btn" id="btnCopyQq" title="复制QQ群号"><svg viewBox="0 0 24 24" fill="none" stroke="#515154" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button><span class="copy-tip" id="copyTip">已复制</span></p>
+    <div class="cards">
+      <div class="card">
+        <img id="imgWechat" src="assets/wechat.png" alt="微信赞赏码">
+        <div class="ph" id="phWechat">请将微信收款码保存为<br>assets\wechat.png</div>
+        <div class="cap">微信打赏</div>
+      </div>
+      <div class="card">
+        <img id="imgAlipay" src="assets/alipay.png" alt="支付宝收款码">
+        <div class="ph" id="phAlipay">请将支付宝收款码保存为<br>assets\alipay.png</div>
+        <div class="cap">支付宝</div>
+      </div>
+    </div>
+    <p class="thanks">感谢你的支持！🙏</p>
+    <p class="esc-tip">按 Esc 或关闭本窗口返回</p>
+  </div>
+  <script src="support.js"></script>
+</body>
+</html>

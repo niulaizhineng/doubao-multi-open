@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>豆包多开管理器</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Microsoft YaHei", system-ui, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      display: flex;
+      overflow: hidden;
+      user-select: none;
+    }
+    .sidebar {
+      width: 260px; min-width: 260px;
+      background: #fff;
+      border-right: 1px solid #e3e3e8;
+      display: flex; flex-direction: column;
+      height: 100vh;
+    }
+    .sidebar-header { padding: 14px 14px 10px; border-bottom: 1px solid #eeeef2; }
+    .sidebar-header h1 { font-size: 15px; font-weight: 600; }
+    .sidebar-header p { font-size: 11px; color: #86868b; margin-top: 3px; }
+    .btn-add {
+      margin: 12px 14px 6px; padding: 9px 0;
+      background: #1d63d8; color: #fff; border: none; border-radius: 8px;
+      font-size: 13px; cursor: pointer;
+    }
+    .btn-add:hover { background: #174ec0; }
+    .btn-add:disabled { background: #b8b8be; cursor: wait; }
+    .account-list { flex: 1; overflow-y: auto; padding: 4px 8px; }
+    .account-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 10px 10px; margin: 3px 0;
+      border-radius: 8px; font-size: 13px; cursor: pointer;
+      background: #f7f7f9; border: 1px solid transparent;
+    }
+    .avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      flex-shrink: 0; position: relative;
+    }
+    .avatar::after {
+      content: ''; position: absolute; right: -1px; bottom: -1px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #c7c7cc; border: 2px solid #fff;
+    }
+    .account-item[data-badge="online"] .avatar::after { background: #34c759; }
+    .account-item[data-badge="pending"] .avatar::after { background: #ff9f0a; }
+    .account-item[data-badge="offline"] .avatar::after { background: #ff3b30; }
+    .account-item[data-badge="loadfail"] .avatar::after { background: #ff3b30; }
+    .acc-name {
+      flex: 1; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .account-item:hover { background: #f0f0f4; }
+    .account-item.active { background: #e8f1fe; border-color: #1d63d8; color: #0c3f96; }
+    .badge {
+      font-size: 10px; padding: 1px 6px; border-radius: 8px;
+      background: #e6f4ea; color: #1e7e34; white-space: nowrap;
+    }
+    .badge.pending { background: #fff3cd; color: #8a6d1a; }
+    .badge.offline, .badge.loadfail { background: #fdecea; color: #b3261e; }
+    .del {
+      color: #c0392b; font-size: 12px; border: none; background: none;
+      cursor: pointer; visibility: hidden; padding: 2px 6px;
+    }
+    .account-item:hover .del { visibility: visible; }
+    .empty-tip { color: #86868b; font-size: 12px; text-align: center; padding: 30px 10px; line-height: 1.8; }
+    .sidebar-footer { border-top: 1px solid #eeeef2; padding: 10px 14px 12px; }
+    .author-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 2px 8px; font-size: 11px; color: #86868b;
+    }
+    .heart-btn {
+      width: 26px; height: 26px; border-radius: 8px;
+      background: #f0f0f4; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .15s ease, background .15s ease;
+      padding: 0;
+    }
+    .heart-btn:hover { background: #ffe9ee; transform: scale(1.12); }
+    .heart-btn svg { display: block; }
+    .heart-btn.pop svg { animation: heartpop .35s ease; }
+    @keyframes heartpop { 0%{transform:scale(1)} 40%{transform:scale(1.4)} 100%{transform:scale(1)} }
+    .pref-row {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px; color: #515154; cursor: pointer;
+    }
+    /* 双击就地编辑 */
+    .inline-edit {
+      width: 100%; min-width: 0;
+      font: inherit; font-size: 13px;
+      padding: 2px 6px;
+      border: 1px solid #1d63d8; border-radius: 6px;
+      outline: none; background: #fff; color: #1d1d1f;
+    }
+    .main-area { flex: 1; position: relative; background: #eceef2; }
+    .main-tip {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; gap: 8px;
+      align-items: center; justify-content: center;
+      color: #86868b; font-size: 13px; pointer-events: none;
+    }
+    .toast-wrap { position: fixed; right: 16px; bottom: 16px; z-index: 99; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      background: rgba(28,28,32,.92); color: #fff; font-size: 12px;
+      padding: 10px 14px; border-radius: 10px; max-width: 320px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.25); cursor: default;
+      animation: fadein .2s ease;
+    }
+    .toast b { cursor: pointer; text-decoration: underline; }
+    @keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h1>豆包多开管理器</h1>
+      <p>v3 · 视图池 · 毫秒级切号</p>
+    </div>
+    <button class="btn-add" id="btnAdd">＋ 添加账号（在右侧页面直接扫码）</button>
+    <div class="account-list" id="accountList"></div>
+    <div class="sidebar-footer">
+      <div class="author-row">
+        <span id="supAuthor" title="点此支持作者" style="cursor:pointer">作者：牛来智能</span>
+        <button class="heart-btn" id="btnHeart" title="喜欢就点个赞">
+          <svg viewBox="0 0 24 24" width="14" height="14">
+            <path id="heartPath" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#c7c7cc"/>
+          </svg>
+        </button>
+      </div>
+      <label class="pref-row">
+        <input type="checkbox" id="chkTray"> 关闭按钮最小化到托盘
+        &nbsp;·&nbsp;<a href="#" id="lnkDl" style="color:#1d63d8;">下载目录</a>
+      </label>
+    </div>
+  </aside>
+  <div class="main-area">
+    <div class="main-tip" id="mainTip">
+      <div style="font-size:34px;">🐋</div>
+      <div>点击左侧账号切换；＋添加账号后在右侧直接扫码登录</div>
+      <div style="font-size:11px;color:#b0b0b6;">Ctrl+1~9 快速切号 · 双击名称就地改名</div>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toastWrap"></div>
+  <script src="renderer.js"></script>
+</body>
+</html>

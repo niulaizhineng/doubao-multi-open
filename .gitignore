@@ -1,0 +1,17 @@
+# 依赖与运行时数据(不上传 GitHub)
+node_modules/
+
+# 用户私有数据: 各账号登录态、分区会话 —— 绝对不要公开
+userdata/
+downloads/
+profiles/
+
+# 日志
+*.log
+
+# 本地构建产物
+*.exe
+
+# 系统文件
+Thumbs.db
+.DS_Store
