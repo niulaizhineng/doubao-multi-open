@@ -891,6 +891,7 @@ ipcMain.handle('accounts:delete', async (e, id) => {
   const accounts = loadAccounts().filter(a => a.id !== id);
   saveAccounts(accounts);
   badges.delete(id);
+  nameAttempts.delete(id);
   await deleteAccountDeep(id);
   rebuildTrayMenu();
   return accounts;

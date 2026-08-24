@@ -2,6 +2,12 @@
   "name": "doubao-multi-open",
   "version": "3.0.0",
   "description": "豆包多账号管理器 - 视图池架构 · 单窗口毫秒级切号",
+  "author": "niulaizhineng (牛来智能)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niulaizhineng/doubao-multi-open.git"
+  },
   "main": "main.js",
   "scripts": {
     "start": "electron ."
