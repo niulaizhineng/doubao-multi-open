@@ -43,7 +43,8 @@ doubaoduokai\
 ├─ 启动豆包多开.bat      启动入口(自动清环境变量/缺依赖时自动安装)
 ├─ app.ico              应用图标
 ├─ .gitignore           隐私数据与依赖忽略清单
-└─ 说明.md              本文件
+├─ assets\              收款码图片(支持作者弹窗用)
+└─ README.md            本文件
 
 运行时自动生成(已被 .gitignore 排除):
 ├─ userdata\            各账号分区会话数据(含登录态,勿外传)
